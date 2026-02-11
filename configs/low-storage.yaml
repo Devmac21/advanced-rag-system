@@ -1,0 +1,39 @@
+# Configuration optimized for low storage systems
+
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"  # Smallest good model (80MB)
+  dimension: 384
+  device: "cpu"
+  batch_size: 16  # Reduced for lower memory usage
+  normalize: true
+  cache_dir: null  # Don't cache to save space
+
+chunking:
+  strategy: "fixed"  # Simplest, no extra dependencies
+  chunk_size: 512
+  chunk_overlap: 50
+
+vector_store:
+  type: "faiss"  # Uses less storage than chromadb
+  persist_directory: "./vector_stores"
+  collection_name: "default"
+  index_type: "Flat"  # Simplest index
+
+retrieval:
+  strategy: "dense"  # Skip sparse to save memory
+  top_k: 3  # Fewer results = less processing
+  enable_reranking: false  # Skip re-ranker to save space
+  
+llm:
+  provider: "ollama"
+  model: "tinyllama"  # Only 637MB!
+  temperature: 0.7
+  max_tokens: 512  # Reduced for faster responses
+  top_p: 0.9
+  ollama_base_url: "http://localhost:11434"
+  stream: true
+
+# General settings
+log_level: "WARNING"  # Less logging = less disk writes
+cache_enabled: false  # Disable cache to save space
+max_conversation_history: 5  # Reduced

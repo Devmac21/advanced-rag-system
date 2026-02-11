@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  rag-system:
+    build: .
+    container_name: advanced-rag
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    volumes:
+      - ./documents:/app/documents
+      - ./vector_stores:/app/vector_stores
+      - ./cache:/app/cache
+      - ./configs:/app/configs
+    environment:
+      - RAG_LOG_LEVEL=INFO
+    command: streamlit run web/app.py --server.port 8501 --server.address 0.0.0.0
+    restart: unless-stopped
+
+  # Optional: Add Ollama service if running locally
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ollama-data:/root/.ollama
+  #   restart: unless-stopped
+
+# volumes:
+#   ollama-data:

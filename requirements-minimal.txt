@@ -1,0 +1,42 @@
+# Minimal requirements for storage-constrained systems
+# Use this instead of requirements.txt if you have limited disk space
+
+# Core dependencies (required)
+numpy>=1.24.0
+sentence-transformers>=2.2.0  # Includes torch as dependency
+faiss-cpu>=1.7.4
+
+# Document processing (required)
+pypdf>=3.15.0
+python-docx>=1.0.0
+beautifulsoup4>=4.12.0
+
+# Text processing (required)
+rank-bm25>=0.2.2
+nltk>=3.8.0
+
+# Configuration (required)
+pyyaml>=6.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# CLI & logging (required)
+rich>=13.0.0
+typer>=0.9.0
+loguru>=0.7.0
+tqdm>=4.66.0
+
+# HTTP client (required)
+httpx>=0.24.0
+
+# API option (tiny - use instead of Ollama)
+groq  # Only ~1MB
+
+# Optional: Streamlit for web UI (only install if needed)
+# streamlit>=1.28.0
+
+# Skip these to save space:
+# - chromadb (use faiss only)
+# - langchain (we don't need it)
+# - transformers (sentence-transformers includes what we need)
+# - spacy (optional, only for advanced chunking)

@@ -1,0 +1,77 @@
+# Configuration for using Groq API (fast, free inference)
+
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  dimension: 384
+  device: "cpu"
+  batch_size: 32
+  normalize: true
+
+chunking:
+  strategy: "recursive"
+  chunk_size: 512
+  chunk_overlap: 50
+
+vector_store:
+  type: "faiss"
+  persist_directory: "./vector_stores"
+  collection_name: "default"
+  index_type: "Flat"
+
+retrieval:
+  strategy: "hybrid"
+  top_k: 8  # Increased for more context
+  dense_weight: 0.7
+  sparse_weight: 0.3
+  enable_reranking: true
+  rerank_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  rerank_top_k: 25  # Retrieve more, then rerank to best 8
+
+llm:
+  provider: "groq"  # Using Groq instead of Ollama
+  model: "llama3.3"  # Will map to llama-3.3-70b-versatile (latest model)
+  temperature: 0.6  # Slightly lower for more focused responses
+  max_tokens: 2048  # Increased for more detailed answers
+  top_p: 0.95
+  stream: true
+  system_prompt: |
+    You are an intelligent AI assistant with access to a knowledge base. Your role is to provide comprehensive, accurate, and well-structured answers based on the context provided.
+    
+    Guidelines:
+    - Provide detailed, informative responses that thoroughly address the question
+    - Use the context information to support your answer with specific facts and details
+    - Cite sources using [number] notation when referencing specific information
+    - If the context doesn't contain enough information, acknowledge this and provide what you can
+    - Structure your response clearly with proper formatting when appropriate
+    - Be conversational yet professional in your tone
+    - Provide examples or explanations to enhance understanding
+    - If relevant, offer additional insights or related information from the context
+  # Set GROQ_API_KEY environment variable or add:
+  # groq_api_key: "your_key_here"
+
+prompts:
+  qa_template: |
+    You are a knowledgeable AI assistant. Use the context below to provide a comprehensive and accurate answer to the user's question.
+    
+    **Context Information:**
+    ---------------------
+    {context}
+    ---------------------
+    
+    **Instructions:**
+    - Provide a detailed, well-structured answer based on the context above
+    - Cite specific sources using [number] notation to reference the context sections
+    - If the context provides multiple perspectives or details, incorporate them into a cohesive response
+    - Explain concepts clearly and provide examples when helpful
+    - If the context doesn't fully answer the question, state what you know and what's missing
+    - Be thorough but concise - aim for comprehensive coverage without unnecessary repetition
+    
+    **Question:** {query}
+    
+    **Answer:**
+
+# General settings
+log_level: "INFO"
+cache_enabled: true
+cache_dir: "./cache"
+max_conversation_history: 10

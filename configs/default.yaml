@@ -1,0 +1,85 @@
+# Default RAG System Configuration
+
+embeddings:
+  model: "sentence-transformers/all-MiniLM-L6-v2"
+  dimension: 384
+  device: "cpu"  # Use "cuda" for GPU
+  batch_size: 32
+  normalize: true
+  cache_dir: null
+
+chunking:
+  strategy: "recursive"  # fixed, recursive, semantic, parent_child
+  chunk_size: 512
+  chunk_overlap: 50
+  use_semantic_similarity: false
+  similarity_threshold: 0.5
+  parent_chunk_size: 2048
+  child_chunk_size: 512
+
+vector_store:
+  type: "faiss"  # faiss, chromadb, qdrant
+  persist_directory: "./vector_stores"
+  collection_name: "default"
+  index_type: "Flat"  # Flat, IVF, HNSW
+
+retrieval:
+  strategy: "hybrid"  # dense, sparse, hybrid
+  top_k: 5
+  dense_weight: 0.7
+  sparse_weight: 0.3
+  bm25_k1: 1.5
+  bm25_b: 0.75
+  enable_reranking: true
+  rerank_model: "cross-encoder/ms-marco-MiniLM-L-6-v2"
+  rerank_top_k: 20
+  enable_query_expansion: false
+  enable_hyde: false
+  num_expanded_queries: 3
+
+llm:
+  provider: "ollama"  # ollama, openai, anthropic, huggingface
+  model: "phi"  # Changed from llama3.1 for better performance on i5-1235U
+  temperature: 0.7
+  max_tokens: 1024  # Reduced for faster responses
+  top_p: 0.9
+  ollama_base_url: "http://localhost:11434"
+  stream: true
+  system_prompt: |
+    You are a helpful AI assistant. Answer questions based on the provided context.
+    Be concise, accurate, and cite your sources using [number] notation.
+    If you don't know the answer based on the context, say so.
+
+prompts:
+  qa_template: |
+    Context information is below:
+    ---------------------
+    {context}
+    ---------------------
+    
+    Given the context information and not prior knowledge, answer the question.
+    If the answer is not in the context, say "I don't have enough information to answer that."
+    Be specific and cite sources using [number] notation.
+    
+    Question: {query}
+    Answer:
+  
+  hyde_template: |
+    Write a detailed paragraph that would answer the following question:
+    
+    Question: {query}
+    
+    Paragraph:
+  
+  query_expansion_template: |
+    Generate {num_queries} different versions of the following question to retrieve relevant documents:
+    
+    Original question: {query}
+    
+    Alternative questions:
+
+# General settings
+log_level: "INFO"
+cache_enabled: true
+cache_dir: "./cache"
+max_conversation_history: 10
